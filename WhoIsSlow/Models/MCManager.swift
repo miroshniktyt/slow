@@ -13,6 +13,7 @@ protocol MCManagerDiscoveryDelegate: class {
     func foundPeersChanged()
     func didReceiveInvitationFromPeer(peerName: String)
     func connectedWithPeer(isHost: Bool)
+    func didNotConnectToPeer(peerName: String)
 }
 
 protocol MCManagerGameDelegate: class {
@@ -23,22 +24,21 @@ protocol MCManagerGameDelegate: class {
 
 class MCManager: NSObject {
     
-    var isHost: Bool = false
-    
-    var isSearchOn: Bool = false {
+    var isSearchEnabled = false {
         didSet {
-            guard oldValue != isSearchOn else { return }
+            guard oldValue != isSearchEnabled else { return }
             
-            if isSearchOn {
+            if isSearchEnabled {
                 browser.startBrowsingForPeers()
                 advertiser.startAdvertisingPeer()
             } else {
-                foundPeers = []
                 browser.stopBrowsingForPeers()
                 advertiser.stopAdvertisingPeer()
             }
         }
     }
+    
+    var isHost: Bool = false
     
     var session: MCSession!
      
@@ -100,7 +100,7 @@ class MCManager: NSObject {
     }
     
     func sendFinishData() {
-        let gameData = GameData(dataType: .finish, location: nil)
+        let gameData = GameData(dataType: .finished, location: nil)
         do {
             let data = try JSONEncoder().encode(gameData)
             try session.send(data, toPeers: session.connectedPeers, with: .reliable)
@@ -123,7 +123,7 @@ class MCManager: NSObject {
             if let location = data.location {
                 DispatchQueue.main.async { self.gameDelegate?.hostDidReplaceAim(toLocation: location) }
             }
-        case .finish:
+        case .finished:
             DispatchQueue.main.async { self.gameDelegate?.finishGame(isWinner: false) }
         }
     }
@@ -161,6 +161,9 @@ extension MCManager: MCSessionDelegate {
         case .connecting:
             print("Connecting to session: \(session)")
         case .notConnected:
+            DispatchQueue.main.async {
+                self.discoveryDelegate?.didNotConnectToPeer(peerName: peerID.displayName)
+            }
             print("Did not connect to session: \(session)")
         default:
             break

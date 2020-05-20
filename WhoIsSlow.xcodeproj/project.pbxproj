@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		2CA0ED9C2472CBC100B7A95A /* GameData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CA0ED9B2472CBC100B7A95A /* GameData.swift */; };
+		2CC058F424757D93000463BE /* TableViewCellWithActivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CC058F324757D93000463BE /* TableViewCellWithActivityIndicator.swift */; };
 		2CF13F14246EBF0100D995A2 /* Aim.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CF13F13246EBF0100D995A2 /* Aim.swift */; };
 		2CF1AEC22469685500BB8745 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CF1AEC12469685500BB8745 /* AppDelegate.swift */; };
 		2CF1AEC42469685500BB8745 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CF1AEC32469685500BB8745 /* SceneDelegate.swift */; };
@@ -23,6 +24,7 @@
 
 /* Begin PBXFileReference section */
 		2CA0ED9B2472CBC100B7A95A /* GameData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameData.swift; sourceTree = "<group>"; };
+		2CC058F324757D93000463BE /* TableViewCellWithActivityIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewCellWithActivityIndicator.swift; sourceTree = "<group>"; };
 		2CF13F13246EBF0100D995A2 /* Aim.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Aim.swift; sourceTree = "<group>"; };
 		2CF1AEBE2469685500BB8745 /* WhoIsSlow.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WhoIsSlow.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2CF1AEC12469685500BB8745 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -73,6 +75,7 @@
 			children = (
 				2CF13F13246EBF0100D995A2 /* Aim.swift */,
 				2CF1AEC72469685500BB8745 /* Main.storyboard */,
+				2CC058F324757D93000463BE /* TableViewCellWithActivityIndicator.swift */,
 				2CF1AECC2469685700BB8745 /* LaunchScreen.storyboard */,
 			);
 			path = Views;
@@ -193,6 +196,7 @@
 				2CF1AED624696AFC00BB8745 /* Extentions.swift in Sources */,
 				2CF13F14246EBF0100D995A2 /* Aim.swift in Sources */,
 				2CF1AEDA246A9A6200BB8745 /* MCManager.swift in Sources */,
+				2CC058F424757D93000463BE /* TableViewCellWithActivityIndicator.swift in Sources */,
 				2CF1AEC62469685500BB8745 /* RootViewController.swift in Sources */,
 				2CF1AEC22469685500BB8745 /* AppDelegate.swift in Sources */,
 				2CA0ED9C2472CBC100B7A95A /* GameData.swift in Sources */,

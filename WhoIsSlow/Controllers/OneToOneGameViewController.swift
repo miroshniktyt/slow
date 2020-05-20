@@ -142,16 +142,3 @@ extension OneToOneGameViewController: MCManagerGameDelegate {
         }
     }
 }
-
-struct Location: Codable {
-    
-//    let dateCreated: Date = Date()
-    
-    let x: CGFloat
-    
-    let y: CGFloat
-    
-    static var random: Location {
-        return .init(x: .random(in: 0...1), y: .random(in: 0...1))
-    }
-}

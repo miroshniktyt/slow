@@ -9,6 +9,12 @@
 import Foundation
 import UIKit
 
+extension NSObject {
+    static var className: String {
+        return String(describing: type(of: self))
+    }
+}
+
 extension UIView {
     
     enum ViewSide {

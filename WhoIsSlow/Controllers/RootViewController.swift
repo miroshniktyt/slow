@@ -8,43 +8,59 @@
 
 import UIKit
 
-class RootViewController: UIViewController {
-            
+class NavigationController: UINavigationController {
+        
+    required init?(coder aDecoder: NSCoder) {
+        let vc = RootTableViewController(style: .grouped)
+        super.init(rootViewController: vc)
+    }
+    
+}
+
+class RootTableViewController: UITableViewController {
+    
     private let mcManager = MCManager()
     
-    lazy var tableView: UITableView = {
-        let table = UITableView(frame: .zero, style: UITableView.Style.grouped)
-        table.register(UITableViewCell.self, forCellReuseIdentifier: "id")
-        table.dataSource = self
-        table.delegate = self
-        return table
-    }()
+    override init(style: UITableView.Style) {
+        super.init(style: style)
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: NSStringFromClass(UITableViewCell.self))
+        tableView.register(TableViewCellWithActivityIndicator.self, forCellReuseIdentifier: NSStringFromClass(TableViewCellWithActivityIndicator.self))
+    }
     
-    override func viewWillAppear(_ animated: Bool) {
-        if let indexPathForSelectedRow = tableView.indexPathForSelectedRow {
-            tableView.deselectRow(at: indexPathForSelectedRow, animated: true)
-        }
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         mcManager.discoveryDelegate = self
-        
-        view.addSubview(tableView)
-        tableView.fillSuperview()
-        
-//        navigationItem.rightBarButtonItem = .init(barButtonSystemItem: .add, target: self, action: #selector(barButtonTapped))
+        mcManager.isSearchEnabled = true
     }
     
-//    @objc private func barButtonTapped() {
-//        print(mcManager.session.connectedPeers)
-//    }
-}
-
-extension RootViewController: UITableViewDelegate, UITableViewDataSource {
+    @objc private func switchSearch(_ sender: UISwitch) {
+        mcManager.isSearchEnabled = sender.isOn
+        
+        if mcManager.isSearchEnabled {
+            tableView.insertSections(.init(integer: 2), with: .none)
+        } else  {
+            tableView.deleteSections(.init(integer: 2), with: .none)
+        }
+    }
     
-    func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+    override func numberOfSections(in tableView: UITableView) -> Int {
+        return mcManager.isSearchEnabled ? 3 : 2
+    }
+    
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if section == 2 {
+            return mcManager.foundPeers.count
+        } else {
+            return 1
+        }
+    }
+    
+    override func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
         switch section {
         case 2:
             return "Invite other player to compete."
@@ -53,7 +69,32 @@ extension RootViewController: UITableViewDelegate, UITableViewDataSource {
         }
     }
     
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        switch indexPath.section {
+        case 0:
+            let cell = tableView.dequeueReusableCell(withIdentifier: NSStringFromClass(UITableViewCell.self), for: indexPath)
+            cell.textLabel?.text = "Play Solo"
+            cell.textLabel?.textColor = .link
+            return cell
+        case 1:
+            let cell = tableView.dequeueReusableCell(withIdentifier: NSStringFromClass(UITableViewCell.self), for: indexPath)
+            cell.textLabel?.text = "Search nearby"
+            let switcher = UISwitch()
+            switcher.isOn = mcManager.isSearchEnabled
+            switcher.addTarget(self, action: #selector(switchSearch(_:)), for: .valueChanged)
+            cell.accessoryView = switcher
+            return cell
+        case 2:
+            let cell = tableView.dequeueReusableCell(withIdentifier: NSStringFromClass(TableViewCellWithActivityIndicator.self), for: indexPath)
+            cell.textLabel?.text = mcManager.foundPeers[indexPath.row].displayName
+            return cell
+        default:
+            return UITableViewCell()
+        }
+    }
+    
+    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         switch section {
         case 2:
             let view = UITableViewHeaderFooterView()
@@ -74,65 +115,41 @@ extension RootViewController: UITableViewDelegate, UITableViewDataSource {
         }
     }
     
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return mcManager.isSearchOn ? 3 : 2
-    }
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == 2 {
-            return mcManager.foundPeers.count
-        } else {
-            return 1
-        }
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "id", for: indexPath)
-        
-        switch indexPath.section {
-        case 0:
-            cell.textLabel?.text = "Play Solo"
-            cell.textLabel?.textColor = .link
-        case 1:
-            cell.textLabel?.text = "Search nearby"
-            let switcher = UISwitch()
-            switcher.isOn = mcManager.isSearchOn
-            switcher.addTarget(self, action: #selector(switchSearch(_:)), for: .valueChanged)
-            cell.accessoryView = switcher
-        case 2:
-            cell.textLabel?.text = mcManager.foundPeers[indexPath.row].displayName
-        default:
-            break
-        }
-        
-        return cell
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.section {
         case 0:
             navigationController?.pushViewController(SoloGameViewController(), animated: true)
         case 2:
             mcManager.sendInvitation(toPeer: indexPath.row)
             mcManager.isHost = true
+            
+            let cell = tableView.cellForRow(at: indexPath)
+            if let activitiIndicator = cell?.accessoryView as? UIActivityIndicatorView {
+                activitiIndicator.startAnimating()
+            }
         default:
             tableView.deselectRow(at: indexPath, animated: true)
         }
     }
     
-    @objc private func switchSearch(_ sender: UISwitch) {
-        let isOn = sender.isOn
-        if isOn {
-            mcManager.isSearchOn = isOn
-            tableView.insertSections(.init(integer: 2), with: .top)
-        } else {
-            tableView.deleteSections(.init(integer: 2), with: .top)
-            mcManager.isSearchOn = isOn
-        }
-    }
 }
 
-extension RootViewController: MCManagerDiscoveryDelegate {
+
+extension RootTableViewController: MCManagerDiscoveryDelegate {
+    
+    func didNotConnectToPeer(peerName: String) {
+        if let indexPath = tableView.indexPathForSelectedRow {
+            tableView.deselectRow(at: indexPath, animated: true)
+        }
+        
+        let alert = UIAlertController(title: "", message: "Couldn't connect to \(peerName).", preferredStyle: .alert)
+        let declineAction = UIAlertAction(title: "Ok", style: .cancel) { (alertAction) -> Void in
+            self.mcManager.invitationHandler?(false, nil)
+        }
+        alert.addAction(declineAction)
+        self.present(alert, animated: true, completion: nil)
+    }
+    
     func didReceiveInvitationFromPeer(peerName: String) {
         let alert = UIAlertController(title: "", message: "\(peerName) wants to play with you.", preferredStyle: .alert)
         let acceptAction: UIAlertAction = UIAlertAction(title: "Accept", style: .default) { (alertAction) -> Void in
