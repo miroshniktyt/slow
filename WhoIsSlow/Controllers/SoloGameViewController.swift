@@ -20,11 +20,11 @@ class SoloGameViewController: UIViewController {
     
     private var startDate: Date = Date()
     
-    private let aimSize: CGFloat = 64
+    private let aimSize: CGFloat = Consts.aimSize
 
     private let startCounterLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 64)
+        label.font = .systemFont(ofSize: Consts.aimSize)
         label.textAlignment = .center
         label.textColor = .link
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -69,6 +69,7 @@ class SoloGameViewController: UIViewController {
     
     func startGame() {
         startDate = Date()
+
         count = roundsNumber
         view.addSubview(startCounterLabel)
         startCounterLabel.fillSuperview()
@@ -78,7 +79,6 @@ class SoloGameViewController: UIViewController {
         DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
             self.startCounterLabel.removeFromSuperview()
             self.replaceAim()
-            self.view.addSubview(self.aim)
         }
     }
     

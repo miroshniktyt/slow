@@ -29,11 +29,16 @@ class Aim: UIView {
         return label
     }()
     
+    convenience init() {
+        self.init(size: 64)
+    }
+    
     init(size: CGFloat) {
         super.init(frame: .zero)
         frame.size = .init(width: size, height: size)
         backgroundColor = .link
         layer.cornerRadius = size / 2
+        label.font = .systemFont(ofSize: size / 4)
         
         addSubview(label)
         label.fillSuperview()
@@ -58,8 +63,10 @@ class Aim: UIView {
         shadow.layer.cornerRadius = self.frame.size.width / 2
         shadow.center = self.center
         superview.insertSubview(shadow, at: 0)
+        
         UIView.animate(withDuration: 1, delay: 0, options: .curveEaseOut, animations: {
             shadow.alpha = 0
+            shadow.transform = .init(scaleX: 1.2, y: 1.2)
         }) { (_) in
             shadow.removeFromSuperview()
         }

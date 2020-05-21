@@ -60,15 +60,6 @@ class RootTableViewController: UITableViewController {
         }
     }
     
-    override func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-        switch section {
-        case 2:
-            return "Invite other player to compete."
-        default:
-            return nil
-        }
-    }
-    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         switch indexPath.section {
@@ -91,6 +82,15 @@ class RootTableViewController: UITableViewController {
             return cell
         default:
             return UITableViewCell()
+        }
+    }
+    
+    override func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+        switch section {
+        case 2:
+            return mcManager.foundPeers.isEmpty ? "There is nobody nearby" : "Invite other player to compete."
+        default:
+            return nil
         }
     }
     

@@ -21,6 +21,11 @@ extension UIView {
         case Left, Right, Top, Bottom
     }
     
+    func anchorSize(size: CGSize) {
+        self.widthAnchor.constraint(equalToConstant: size.width).isActive = true
+        self.heightAnchor.constraint(equalToConstant: size.height).isActive = true
+    }
+    
     func stickToSuperviewsTop(withInsets insets: UIEdgeInsets = .init(top: 0, left: 0, bottom: 0, right: 0)) {
         translatesAutoresizingMaskIntoConstraints = false
         guard let superview = superview else { return }
@@ -31,6 +36,7 @@ extension UIView {
             topAnchor.constraint(equalTo: superview.topAnchor, constant: insets.left)
         ])
     }
+
     
     func fillSuperview(withInsets insets: UIEdgeInsets = .init(top: 0, left: 0, bottom: 0, right: 0)) {
         translatesAutoresizingMaskIntoConstraints = false

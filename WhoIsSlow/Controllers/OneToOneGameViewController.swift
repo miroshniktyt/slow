@@ -34,19 +34,8 @@ class OneToOneGameViewController: UIViewController {
     
     private var startDate: Date = Date()
     
-    private let aimSize: CGFloat = 64
-
-    private let startCounterLabel: UILabel = {
-        let label = UILabel()
-        label.font = .systemFont(ofSize: 64)
-        label.textAlignment = .center
-        label.textColor = .link
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-    
     private lazy var aim: Aim = {
-        let view = Aim(size: aimSize)
+        let view = Aim(size: Consts.aimSize)
         let gesture = UITapGestureRecognizer(target: self, action: #selector(aimTapped))
         view.addGestureRecognizer(gesture)
         return view
@@ -91,23 +80,33 @@ class OneToOneGameViewController: UIViewController {
     
     func placeAimOnNewLocation(forLocation location: Location) {
         let safeAreaFrame = view.safeAreaLayoutGuide.layoutFrame
-        let randomAreaOrgin = safeAreaFrame.origin.applying(.init(translationX: aimSize / 2, y: aimSize / 2))
-        let x = location.x * (safeAreaFrame.size.width - aimSize) + randomAreaOrgin.x
-        let y = location.y * (safeAreaFrame.size.height - aimSize) + randomAreaOrgin.y
+        let randomAreaOrgin = safeAreaFrame.origin.applying(.init(translationX: Consts.aimSize / 2, y: Consts.aimSize / 2))
+        let x = location.x * (safeAreaFrame.size.width - Consts.aimSize) + randomAreaOrgin.x
+        let y = location.y * (safeAreaFrame.size.height - Consts.aimSize) + randomAreaOrgin.y
         aim.center = .init(x: x, y: y)
         view.addSubview(aim)
     }
     
     func startGame() {
-        startDate = Date()
         count = roundsNumber
+        
+        let startCounterLabel: UILabel = {
+            let label = UILabel()
+            label.font = .systemFont(ofSize: Consts.aimSize)
+            label.textAlignment = .center
+            label.textColor = .link
+            label.text = "3"
+            label.translatesAutoresizingMaskIntoConstraints = false
+            return label
+        }()
+        
         view.addSubview(startCounterLabel)
         startCounterLabel.fillSuperview()
-        startCounterLabel.text = "3"
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { self.startCounterLabel.text = "2" }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) { self.startCounterLabel.text = "1" }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { startCounterLabel.text = "2" }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) { startCounterLabel.text = "1" }
         DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-            self.startCounterLabel.removeFromSuperview()
+            startCounterLabel.removeFromSuperview()
             if self.isHost { self.replaceAim() }
         }
     }
